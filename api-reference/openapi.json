@@ -6,11 +6,21 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080",
+      "url": "https://app.hyperbrowser.ai",
       "description": "Production server"
     }
   ],
   "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "securitySchemes": {
       "ApiKeyAuth": {
         "type": "apiKey",
@@ -161,12 +171,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -204,10 +209,24 @@
             }
           },
           "404": {
-            "description": "Session not found"
+            "description": "Session not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Server error"
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -318,18 +337,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
           },
           "500": {
-            "description": "Server error"
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }

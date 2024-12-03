@@ -122,18 +122,26 @@ Stops a running session.
 - `id: string` - Session ID
 
 **Response:**
-`boolean`
+`BasicResponse`
 
 **Example:**
 
 ```typescript
-const success = await client.stopSession(
+const response = await client.stopSession(
   "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"
 );
-console.log(`Session stopped: ${success}`);
+console.log(`Session stopped: ${response.success}`);
 ```
 
 # Types
+
+## Basic Response
+
+```typescript
+interface BasicResponse {
+  success: boolean;
+}
+```
 
 ## Session
 
