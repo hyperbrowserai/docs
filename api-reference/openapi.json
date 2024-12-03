@@ -5,22 +5,60 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/session/{id}/recording": {
-      "get": {
-        "summary": "Get session recording",
-        "parameters": [
-          {
-            "name": "id", 
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+    "/api/session": {
+      "post": {
+        "summary": "Create new session",
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Session created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": ["active", "closed", "error"]
+                    },
+                    "startTime": {
+                      "type": "string",
+                      "format": "timestamp-milliseconds",
+                      "nullable": true
+                    },
+                    "endTime": {
+                      "type": "string",
+                      "format": "timestamp-milliseconds",
+                      "nullable": true
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "iso8601"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "iso8601"
+                    },
+                    "closeReason": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "dataConsumed": {
+                      "type": "string"
+                    },
+                    "sessionUrl": {
+                      "type": "string"
+                    },
+                    "wsEndpoint": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -127,7 +165,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
                 }
               }
             }
@@ -137,64 +180,6 @@
           },
           "500": {
             "description": "Server error"
-          }
-        }
-      }
-    },
-    "/api/session": {
-      "post": {
-        "summary": "Create new session",
-        "responses": {
-          "200": {
-            "description": "Session created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "status": {
-                      "type": "string",
-                      "enum": ["active", "closed", "error"]
-                    },
-                    "startTime": {
-                      "type": "string",
-                      "format": "timestamp-milliseconds",
-                      "nullable": true
-                    },
-                    "endTime": {
-                      "type": "string",
-                      "format": "timestamp-milliseconds",
-                      "nullable": true
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "iso8601"
-                    },
-                    "updatedAt": {
-                      "type": "string",
-                      "format": "iso8601"
-                    },
-                    "closeReason": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "dataConsumed": {
-                      "type": "string"
-                    },
-                    "sessionUrl": {
-                      "type": "string"
-                    },
-                    "wsEndpoint": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
           }
         }
       }
