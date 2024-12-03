@@ -14,26 +14,46 @@ description: "Welcome to the Hyperbrowser Documentation"
   alt="Hero Dark"
 />
 
-## Setting up
+Hyperbrowser is a powerful cloud browser platform that lets you run automated browser sessions at scale. With our simple SDKs and WebSocket connections, you can easily control Chrome browsers in the cloud using your favorite automation tools like Puppeteer and Playwright.
 
-The first step to world-class documentation is setting up your editing environments.
+Whether you're scraping the web, testing applications, or automating workflows, Hyperbrowser provides the infrastructure you need without the hassle of managing browser instances. Get started in minutes with our comprehensive SDKs and straightforward API.
 
-<CardGroup cols={2}>
-  <Card
-    title="Edit Your Docs"
-    icon="pen-to-square"
-    href="https://mintlify.com/docs/quickstart"
-  >
-    Get your docs set up locally for easy development
-  </Card>
-  <Card
-    title="Preview Changes"
-    icon="image"
-    href="https://mintlify.com/docs/development"
-  >
-    Preview your changes before you push to make sure they're perfect
-  </Card>
-</CardGroup>
+## Why Hyperbrowser?
+
+- **Instant Scalability** - Spin up hundreds of browser sessions in seconds without infrastructure headaches
+- **Simple Integration** - Works seamlessly with popular tools like Puppeteer and Playwright
+- **Powerful APIs** - RESTful APIs and WebSocket connections give you complete browser control
+- **Production Ready** - Enterprise-grade reliability and security built-in
+
+## Quick Example
+
+Start automating in just a few lines of code:
+
+```typescript
+import Hyperbrowser from "hyperbrowser";
+import { connect } from "puppeteer-core";
+
+const client = new Hyperbrowser({
+  apiKey: process.env.HYPERBROWSER_API_KEY,
+});
+
+const session = await client.createSession();
+
+// Use the session to automate browser actions
+const browser = await connect({
+  browserWSEndpoint: `${session.wsEndpoint}&apiKey=${process.env.HYPERBROWSER_API_KEY}`,
+  defaultViewport: null,
+});
+
+// Use the browser to automate browser actions
+const page = await browser.newPage();
+await page.goto("https://example.com");
+
+await browser.close();
+
+// Once done, you can stop the session
+await client.stopSession(session.id);
+```
 
 ## Get started with Hyperbrowser Sessions
 
