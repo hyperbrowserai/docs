@@ -1,0 +1,50 @@
+---
+title: Connect with Playwright
+description: Connect with Playwright to automate browser actions via a websocket connection
+icon: "code"
+---
+
+This guide will walk you through connecting to a Hyperbrowser session using Playwright in Node.js.
+
+## Create a Session and Connect with Playwright
+
+1. Start a session via API
+2. Connect to it with Playwright using the websocket url
+3. Create a new page and navigate to a website
+4. Stop the session when finished
+
+```typescript
+import { chromium
+} from "playwright-core";
+import Hyperbrowser from "hyperbrowser";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const client = new Hyperbrowser({
+  apiKey: process.env.HYPERBROWSER_API_KEY,
+});
+
+(async () => {
+  const session = await client.createSession();
+
+  const browser = await chromium.connectOverCDP(
+    `${session.wsEndpoint
+  }&apiKey=${process.env.HYPERBROWSER_API_KEY
+  }`
+  );
+
+  // Create a new page
+  const defaultContext = browser.contexts()[
+    0
+  ];
+  const page = defaultContext.pages()[
+    0
+  ];
+
+  await page.goto("https://hyperbrowser.ai/");
+  await page.close();
+  await browser.close();
+  await client.stopSession(session.id);
+})().catch((error) => console.error(error.message));
+```

@@ -1,0 +1,185 @@
+---
+title: Node SDK
+description: Learn about Hyperbrowser Node SDK
+icon: "node"
+---
+
+<CardGroup col={2}>
+  <Card
+    horizontal
+    icon="github"
+    href="https://github.com/hyperbrowserai/node-sdk"
+  >
+    View on GitHub
+  </Card>
+</CardGroup>
+
+## Installation
+
+```bash
+npm install @hyperbrowser/sdk
+```
+
+## Usage
+
+```typescript
+import Hyperbrowser from "@hyperbrowser/sdk";
+
+const client = new Hyperbrowser({
+  apiKey: process.env.HYPERBROWSER_API_KEY,
+});
+```
+
+# Create Session
+
+Creates a new browser session.
+
+**Method:**
+`client.createSession(options?): Promise<SessionDetail>`
+
+**Endpoint:**
+`POST /api/session`
+
+**Parameters:**
+
+- `none`
+
+**Response:**
+`SessionDetail`
+
+**Example:**
+
+```typescript
+const session = await client.createSession();
+console.log(session.id);
+```
+
+# Get Session Details
+
+Retrieves details of a specific session.
+
+**Method:**
+`client.getSession(id, options?): Promise<SessionDetail>`
+
+**Endpoint:**
+`GET /api/session/{id}`
+
+**Parameters:**
+
+- `id: string` - Session ID
+
+**Response:**
+`SessionDetail`
+
+**Example:**
+
+```typescript
+const session = await client.getSession("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
+console.log(session.id);
+```
+
+# List Sessions
+
+Retrieves a list of all sessions with optional filtering.
+
+**Method:**
+`client.listSessions(params?, options?): Promise<SessionListResponse>`
+
+**Endpoint:**
+`GET /api/sessions`
+
+**Parameters:**
+
+- `SessionListParams`:
+  - `status?: "active" | "closed" | "error"` - Filter sessions by status
+  - `page?: number` - Page number for pagination
+
+**Response:**
+`SessionListResponse`
+
+**Example:**
+
+```typescript
+const response = await client.listSessions({
+  status: "active",
+  page: 1,
+});
+console.log(response.sessions);
+```
+
+# Stop Session
+
+Stops a running session.
+
+**Method:**
+`client.stopSession(id, options?): Promise<boolean>`
+
+**Endpoint:**
+`PUT /api/session/{id}/stop`
+
+**Parameters:**
+
+- `id: string` - Session ID
+
+**Response:**
+`boolean`
+
+**Example:**
+
+```typescript
+const success = await client.stopSession(
+  "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"
+);
+console.log(`Session stopped: ${success}`);
+```
+
+# Types
+
+## Session
+
+```typescript
+interface Session {
+  id: string;
+  teamId: string;
+  status: SessionStatus;
+  startTime?: number;
+  endTime?: number;
+  createdAt: string;
+  updatedAt: string;
+  sessionUrl: string;
+}
+```
+
+## SessionDetail
+
+```typescript
+interface SessionDetail extends Session {
+  wsEndpoint?: string;
+}
+```
+
+## SessionListParams
+
+```typescript
+interface SessionListParams {
+  status?: SessionStatus;
+  page?: number;
+}
+```
+
+## SessionListResponse
+
+```typescript
+interface SessionListResponse {
+  sessions: Session[];
+  totalCount: number;
+  page: number;
+  perPage: number;
+}
+```
+
+## SessionStatus
+
+```typescript
+type SessionStatus = "active" | "closed" | "error";
+```

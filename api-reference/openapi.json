@@ -4,6 +4,26 @@
     "title": "HyperBrowser API",
     "version": "1.0.0"
   },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Production server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
   "paths": {
     "/api/session": {
       "post": {
@@ -22,7 +42,11 @@
                     },
                     "status": {
                       "type": "string",
-                      "enum": ["active", "closed", "error"]
+                      "enum": [
+                        "active",
+                        "closed",
+                        "error"
+                      ]
                     },
                     "startTime": {
                       "type": "string",
@@ -69,7 +93,7 @@
         "parameters": [
           {
             "name": "id",
-            "in": "path", 
+            "in": "path",
             "required": true,
             "schema": {
               "type": "string"
@@ -90,7 +114,11 @@
                     },
                     "status": {
                       "type": "string",
-                      "enum": ["active", "closed", "error"]
+                      "enum": [
+                        "active",
+                        "closed",
+                        "error"
+                      ]
                     },
                     "startTime": {
                       "type": "string",
@@ -155,7 +183,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string" 
+              "type": "string"
             }
           }
         ],
@@ -187,6 +215,34 @@
     "/api/sessions": {
       "get": {
         "summary": "Get list of sessions",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "required": [
+                "false"
+              ],
+              "default": 1
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "closed",
+                "error"
+              ],
+              "required": [
+                "false"
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of sessions",
@@ -206,7 +262,11 @@
                           },
                           "status": {
                             "type": "string",
-                            "enum": ["active", "closed", "error"]
+                            "enum": [
+                              "active",
+                              "closed",
+                              "error"
+                            ]
                           },
                           "startTime": {
                             "type": "string",

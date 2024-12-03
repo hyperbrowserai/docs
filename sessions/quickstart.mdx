@@ -1,0 +1,135 @@
+---
+title: Quickstart
+description: Spin up your first Hyperbrowser Session in minutes
+icon: "rocket"
+---
+
+This guide will walk you through setting up your Hyperbrowser account, launching your first cloud browser session, and controlling it programmatically using Puppeteer in Node.js. In just a few minutes, you'll be automating browsers in the cloud.
+
+Want to jump right in? Skip to our [example projects](#example-projects).
+
+Using a different stack? Check out our guides for [Playwright](/guides/connect-with-playwright), [Python SDK](/sdks/python), or view the [API Reference](/api-reference).
+
+## Initial Setup
+
+### 1. Create a Hyperbrowser Account
+
+- Sign up for a free account at [app.hyperbrowser.ai](https://app.hyperbrowser.ai)
+- The free tier includes browser hours to get you started
+- No credit card required
+
+### 2. Get Your API Key
+
+- After signing up, navigate to <a href="/settings?tab=api-keys">Settings > API Keys</a> in the dashboard
+- Create an API key and store it securely - you won't be able to view it again
+- Keep this key private and never commit it to version control
+
+### 3. Set Up Environment Variables
+
+- Create a `.env` file in your project root:
+- Add your API key as `HYPERBROWSER_API_KEY`
+
+```
+HYPERBROWSER_API_KEY=your_api_key_here
+```
+
+## Install the Node.js SDK
+
+```bash
+npm install @hyperbrowser/sdk
+```
+
+## Create a Session
+
+```typescript
+import Hyperbrowser from "hyperbrowser";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const client = new Hyperbrowser({
+  apiKey: process.env.HYPERBROWSER_API_KEY,
+});
+
+(async () => {
+  const session = await client.createSession();
+
+  // Session created successfully and ready to use
+  console.log("Session created:", session);
+
+  // Once done, you can stop the session
+  await client.stopSession(session.id);
+
+  console.log("Session stopped:", session.id);
+})().catch((error) => console.error(error.message));
+```
+
+## Connecting to the Session
+
+You can connect to the session using automation libraries like [Puppeteer](https://pptr.dev/) or [Playwright](https://playwright.dev/).
+
+### Puppeteer
+
+```typescript
+import { connect } from "puppeteer-core";
+import Hyperbrowser from "hyperbrowser";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const client = new Hyperbrowser({
+  apiKey: process.env.HYPERBROWSER_API_KEY,
+});
+
+(async () => {
+  const session = await client.createSession();
+
+  const browser = await connect({
+    browserWSEndpoint: `${session.wsEndpoint}&apiKey=${process.env.HYPERBROWSER_API_KEY}`,
+    defaultViewport: null,
+  });
+
+  // Create a new page
+  const [page] = await browser.pages();
+
+  // Navigate to a website
+  console.log("Navigating to Hacker News...");
+  await page.goto("https://news.ycombinator.com/");
+  const pageTitle = await page.title();
+  console.log("Page title:", pageTitle);
+
+  await page.close();
+  await browser.close();
+  console.log("Session completed!");
+})().catch((error) => console.error(error.message));
+```
+
+You have now successfully created your first Hyperbrowser session and connected to it using Puppeteer.
+Check out our other guides for more examples on how to Hyperbrowser.
+
+<CardGroup col={2}>
+  <Card
+    horizontal
+    icon="code"
+    title="Puppeteer"
+    href="/guides/connect-with-puppeteer"
+  >
+    Connect with Puppeteer to automate browser actions via a websocket
+    connection
+  </Card>
+  <Card
+    horizontal
+    icon="code"
+    title="Playwright"
+    href="/guides/connect-with-playwright"
+  >
+    Connect with Playwright to automate browser actions via a websocket
+    connection
+  </Card>
+  <Card horizontal icon="python" title="Python SDK" href="/sdks/python">
+    Connect with the Python SDK to automate browser actions
+  </Card>
+  <Card horizontal icon="node" title="Node SDK" href="/sdks/node">
+    Connect with the Node.js SDK to automate browser actions
+  </Card>
+</CardGroup>

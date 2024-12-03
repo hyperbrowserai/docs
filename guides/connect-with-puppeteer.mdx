@@ -1,0 +1,49 @@
+---
+title: Connect with Puppeteer
+description: Connect with Puppeteer to automate browser actions via a websocket connection
+icon: "code"
+---
+
+This guide will walk you through connecting to a Hyperbrowser session using Puppeteer in Node.js.
+
+## Create a Session and Connect with Puppeteer
+
+1. Start a session via API
+2. Connect to it with puppeteer using the websocket url
+3. Create a new page and navigate to a website
+4. Stop the session when finished
+
+```typescript
+import { connect } from "puppeteer-core";
+import Hyperbrowser from "hyperbrowser";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const client = new Hyperbrowser({
+  apiKey: process.env.HYPERBROWSER_API_KEY,
+});
+
+(async () => {
+  const session = await client.createSession();
+
+  const browser = await connect({
+    browserWSEndpoint: `${session.wsEndpoint}&apiKey=${process.env.HYPERBROWSER_API_KEY}`,
+    defaultViewport: null,
+  });
+
+  // Create a new page
+  const [page] = await browser.pages();
+
+  // Navigate to a website
+  console.log("Navigating to Hacker News...");
+  await page.goto("https://news.ycombinator.com/");
+  const pageTitle = await page.title();
+  console.log("Page title:", pageTitle);
+
+  await page.close();
+  await browser.close();
+  await client.stopSession(session.id);
+  console.log("Session completed!");
+})().catch((error) => console.error(error.message));
+```

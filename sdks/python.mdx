@@ -1,0 +1,198 @@
+---
+title: Python SDK
+description: Learn about Hyperbrowser Python SDK
+icon: "python"
+---
+
+<CardGroup col={2}>
+  <Card
+    horizontal
+    icon="github"
+    href="https://github.com/hyperbrowserai/python-sdk"
+  >
+    View on GitHub
+  </Card>
+</CardGroup>
+
+## Installation
+
+```bash
+pip install hyperbrowser
+```
+
+## Usage
+
+```python
+from hyperbrowser import Hyperbrowser
+
+client = Hyperbrowser(api_key="your_api_key")
+```
+
+# Create Session
+
+Creates a new browser session.
+
+**Method:**
+`client.create_session(): SessionDetail`
+
+**Endpoint:**
+`POST /api/session`
+
+**Parameters:**
+
+- `none`
+
+**Response:**
+`SessionDetail`
+
+**Example:**
+
+```python
+session = client.create_session()
+print(session.id)
+```
+
+# Get Session Details
+
+Retrieves details of a specific session.
+
+**Method:**
+`client.get_session(id: str): SessionDetail`
+
+**Endpoint:**
+`GET /api/session/{id}`
+
+**Parameters:**
+
+- `id: str` - Session ID
+
+**Response:**
+`SessionDetail`
+
+**Example:**
+
+```python
+session = client.get_session('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e')
+print(session.session_url)
+```
+
+# List Sessions
+
+Retrieves a list of all sessions with optional filtering.
+
+**Method:**
+`client.get_session_list(params: SessionListParams): SessionListResponse`
+
+**Endpoint:**
+`GET /api/sessions`
+
+**Parameters:**
+
+- `SessionListParams`:
+  - `status?: "active" | "closed" | "error"` - Filter sessions by status
+  - `page?: int` - Page number (default: 1, min: 1)
+  - `per_page?: int` - Results per page (default: 20, min: 1, max: 100)
+
+**Response:**
+`SessionListResponse`
+
+**Example:**
+
+```python
+params = SessionListParams(status="active", page=1, per_page=50)
+response = client.get_session_list(params)
+print(f"Total sessions: {response.total_count}")
+print(f"More pages available: {response.has_more}")
+```
+
+# Stop Session
+
+Stops a running session.
+
+**Method:**
+`client.stop_session(id: str): bool`
+
+**Endpoint:**
+`PUT /api/session/{id}/stop`
+
+**Parameters:**
+
+- `id: str` - Session ID
+
+**Response:**
+`bool`
+
+**Example:**
+
+```python
+success = client.stop_session('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e')
+print(f"Session stopped: {success}")
+```
+
+# Types
+
+## Session
+
+```python
+class Session(BaseModel):
+    id: str
+    team_id: str
+    status: SessionStatus  # "active" | "closed" | "error"
+    created_at: datetime
+    updated_at: datetime
+    start_time: Optional[int] = None
+    end_time: Optional[int] = None
+    duration: Optional[int] = None
+    session_url: str
+```
+
+## SessionDetail
+
+```python
+class SessionDetail(Session):
+    websocket_url: Optional[str] = None
+```
+
+## SessionListParams
+
+```python
+class SessionListParams(BaseModel):
+    status: Optional[SessionStatus] = None
+    page: int = 1  # minimum: 1
+    per_page: int = 20  # minimum: 1, maximum: 100
+```
+
+## SessionListResponse
+
+```python
+class SessionListResponse(BaseModel):
+    sessions: List[Session]
+    total_count: int
+    page: int
+    per_page: int
+
+    @property
+    def has_more(self) -> bool: ...
+
+    @property
+    def total_pages(self) -> int: ...
+```
+
+## SessionStatus
+
+```python
+SessionStatus = Literal["active", "closed", "error"]
+```
+
+# Client Initialization
+
+**Example:**
+
+```python
+from hyperbrowser import Hyperbrowser
+
+client = Hyperbrowser(
+    api_key="your-api-key",
+    base_url="https://app.hyperbrowser.ai"  # optional
+)
+```
