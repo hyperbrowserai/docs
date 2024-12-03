@@ -23,11 +23,12 @@
   ],
   "topbarCtaButton": {
     "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "url": "https://app.hyperbrowser.ai"
   },
   "tabs": [
     {
       "name": "API Reference",
+      "openapi": "/api-reference/openapi.json",
       "url": "api-reference"
     }
   ],
@@ -72,14 +73,6 @@
       "group": "API Documentation",
       "pages": [
         "api-reference/introduction"
-      ]
-    },
-    {
-      "group": "Endpoint Examples",
-      "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
       ]
     }
   ],
