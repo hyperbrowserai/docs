@@ -120,7 +120,7 @@ Stops a running session.
 - `id: str` - Session ID
 
 **Response:**
-`bool`
+`BasicResponse`
 
 **Example:**
 
@@ -130,6 +130,13 @@ print(f"Session stopped: {success}")
 ```
 
 # Types
+
+## BasicResponse
+
+```python
+class BasicResponse(BaseModel):
+    success: bool
+```
 
 ## Session
 
