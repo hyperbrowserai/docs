@@ -18,7 +18,7 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "url": "mailto:akshay@metlo.com"
     }
   ],
   "topbarCtaButton": {
@@ -42,11 +42,6 @@
       "name": "Community",
       "icon": "discord",
       "url": "https://discord.gg/zsYzsgVRjh"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
     }
   ],
   "navigation": [
