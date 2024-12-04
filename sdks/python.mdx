@@ -41,11 +41,11 @@ Creates a new browser session.
 **Parameters:**
 
 - `CreateSessionParams`:
-  - `proxyServer?: string` - Proxy server URL to route the session through.
-  - `proxyServerUsername?: string` - Username for proxy server authentication.
-  - `proxyServerPassword?: string` - Password for proxy server authentication.
-  - `proxyCountry?: Country` - Desired proxy country.
-  - `operatingSystems?: OperatingSystem[]` - Preferred operating systems for the session. Possible values are:
+  - `proxy_server?: string` - Proxy server URL to route the session through.
+  - `proxy_server_username?: string` - Username for proxy server authentication.
+  - `proxy_server_password?: string` - Password for proxy server authentication.
+  - `proxy_country?: Country` - Desired proxy country.
+  - `operating_systems?: OperatingSystem[]` - Preferred operating systems for the session. Possible values are:
     - `OperatingSystem.WINDOWS`
     - `OperatingSystem.ANDROID`
     - `OperatingSystem.MACOS`
@@ -61,10 +61,10 @@ Creates a new browser session.
     - `Platform.EDGE`
   - `locales?: ISO639_1[]` - Preferred locales (languages) for the session. Use ISO 639-1 codes.
   - `screen?: ScreenConfig` - Screen configuration for the session.
-    - `maxWidth: number` - Maximum screen width.
-    - `maxHeight: number` - Maximum screen height.
-    - `minWidth: number` - Minimum screen width.
-    - `minHeight: number` - Minimum screen height.
+    - `max_width: number` - Maximum screen width.
+    - `max_height: number` - Maximum screen height.
+    - `min_width: number` - Minimum screen width.
+    - `min_height: number` - Minimum screen height.
 
 **Response:**
 `SessionDetail`
