@@ -40,7 +40,31 @@ Creates a new browser session.
 
 **Parameters:**
 
-- `none`
+- `CreateSessionParams`:
+  - `proxyServer?: string` - Proxy server URL to route the session through.
+  - `proxyServerUsername?: string` - Username for proxy server authentication.
+  - `proxyServerPassword?: string` - Password for proxy server authentication.
+  - `proxyCountry?: Country` - Desired proxy country.
+  - `operatingSystems?: OperatingSystem[]` - Preferred operating systems for the session. Possible values are:
+    - `OperatingSystem.WINDOWS`
+    - `OperatingSystem.ANDROID`
+    - `OperatingSystem.MACOS`
+    - `OperatingSystem.LINUX`
+    - `OperatingSystem.IOS`
+  - `device?: ("desktop" | "mobile")[]` - Preferred device types. Possible values are:
+    - `"desktop"`
+    - `"mobile"`
+  - `platform?: Platform[]` - Preferred browser platforms. Possible values are:
+    - `Platform.CHROME`
+    - `Platform.FIREFOX`
+    - `Platform.SAFARI`
+    - `Platform.EDGE`
+  - `locales?: ISO639_1[]` - Preferred locales (languages) for the session. Use ISO 639-1 codes.
+  - `screen?: ScreenConfig` - Screen configuration for the session.
+    - `maxWidth: number` - Maximum screen width.
+    - `maxHeight: number` - Maximum screen height.
+    - `minWidth: number` - Minimum screen width.
+    - `minHeight: number` - Minimum screen height.
 
 **Response:**
 `SessionDetail`
@@ -110,7 +134,7 @@ print(f"More pages available: {response.has_more}")
 Stops a running session.
 
 **Method:**
-`client.stop_session(id: str): bool`
+`client.stop_session(id: str): BasicResponse`
 
 **Endpoint:**
 `PUT /api/session/{id}/stop`
@@ -185,10 +209,59 @@ class SessionListResponse(BaseModel):
     def total_pages(self) -> int: ...
 ```
 
+## CreateSessionParams
+
+```python
+class CreateSessionParams(BaseModel):
+    proxy_server: Optional[str] = None
+    proxy_server_password: Optional[str] = None
+    proxy_server_username: Optional[str] = None
+    proxy_country: Optional[Country] = "US"
+    operating_systems: Optional[List[OperatingSystem]] = None
+    device: Optional[List[Literal["desktop", "mobile"]]] = None
+    platform: Optional[List[Platform]] = None
+    locales: List[ISO639_1] = ["en"]
+    screen: Optional[ScreenConfig] = None
+```
+
+## ScreenConfig
+
+```python
+class ScreenConfig(BaseModel):
+    max_width: int = 1280
+    max_height: int = 720
+    min_width: int = 800
+    min_height: int = 480
+```
+
 ## SessionStatus
 
 ```python
 SessionStatus = Literal["active", "closed", "error"]
+```
+
+## Country
+
+```python
+Country = Literal["AD", "AE", "AF", ...other country codes]
+```
+
+## OperatingSystem
+
+```python
+OperatingSystem = Literal["windows", "macos", "linux", "android", "ios"]
+```
+
+## Platform
+
+```python
+Platform = Literal["chrome", "firefox", "safari", "edge"]
+```
+
+## ISO639_1
+
+```python
+ISO639_1 = Literal["en", "es", "fr", ...other language codes]
 ```
 
 # Client Initialization

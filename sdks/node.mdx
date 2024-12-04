@@ -32,17 +32,41 @@ const client = new Hyperbrowser({
 
 # Create Session
 
-Creates a new browser session.
+Creates a new browser session with optional configuration.
 
 **Method:**
-`client.createSession(options?): Promise<SessionDetail>`
+`client.createSession(params?: CreateSessionParams, options?): Promise<SessionDetail>`
 
 **Endpoint:**
 `POST /api/session`
 
 **Parameters:**
 
-- `none`
+- `CreateSessionParams`:
+  - `proxyServer?: string` - Proxy server URL to route the session through.
+  - `proxyServerUsername?: string` - Username for proxy server authentication.
+  - `proxyServerPassword?: string` - Password for proxy server authentication.
+  - `proxyCountry?: Country` - Desired proxy country.
+  - `operatingSystems?: OperatingSystem[]` - Preferred operating systems for the session. Possible values are:
+    - `OperatingSystem.WINDOWS`
+    - `OperatingSystem.ANDROID`
+    - `OperatingSystem.MACOS`
+    - `OperatingSystem.LINUX`
+    - `OperatingSystem.IOS`
+  - `device?: ("desktop" | "mobile")[]` - Preferred device types. Possible values are:
+    - `"desktop"`
+    - `"mobile"`
+  - `platform?: Platform[]` - Preferred browser platforms. Possible values are:
+    - `Platform.CHROME`
+    - `Platform.FIREFOX`
+    - `Platform.SAFARI`
+    - `Platform.EDGE`
+  - `locales?: ISO639_1[]` - Preferred locales (languages) for the session. Use ISO 639-1 codes.
+  - `screen?: ScreenConfig` - Screen configuration for the session.
+    - `maxWidth: number` - Maximum screen width.
+    - `maxHeight: number` - Maximum screen height.
+    - `minWidth: number` - Minimum screen width.
+    - `minHeight: number` - Minimum screen height.
 
 **Response:**
 `SessionDetail`
@@ -112,7 +136,7 @@ console.log(response.sessions);
 Stops a running session.
 
 **Method:**
-`client.stopSession(id, options?): Promise<boolean>`
+`client.stopSession(id, options?): Promise<BasicResponse>`
 
 **Endpoint:**
 `PUT /api/session/{id}/stop`
@@ -186,8 +210,59 @@ interface SessionListResponse {
 }
 ```
 
+## CreateSessionParams
+
+```typescript
+interface CreateSessionParams {
+  proxyServer?: string;
+  proxyServerPassword?: string;
+  proxyServerUsername?: string;
+  proxyCountry?: Country;
+  operatingSystems?: OperatingSystem[];
+  device?: ("desktop" | "mobile")[];
+  platform?: Platform[];
+  locales?: ISO639_1[];
+  screen?: ScreenConfig;
+}
+```
+
+## ScreenConfig
+
+```typescript
+interface ScreenConfig {
+  maxWidth: number;
+  maxHeight: number;
+  minWidth: number;
+  minHeight: number;
+}
+```
+
 ## SessionStatus
 
 ```typescript
 type SessionStatus = "active" | "closed" | "error";
+```
+
+## Country
+
+```typescript
+type Country = "US" | "GB" | "CA" | // ...other country codes
+```
+
+## OperatingSystem
+
+```typescript
+type OperatingSystem = "windows" | "android" | "macos" | "linux" | "ios";
+```
+
+## Platform
+
+```typescript
+type Platform = "chrome" | "firefox" | "safari" | "edge";
+```
+
+## ISO639_1
+
+```typescript
+type ISO639_1 = "en" | "es" | "fr" | // ...other language codes
 ```
