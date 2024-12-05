@@ -28,11 +28,7 @@ const client = new Hyperbrowser({
 (async () => {
   const session = await client.createSession();
 
-  const browser = await chromium.connectOverCDP(
-    `${session.wsEndpoint
-  }&apiKey=${process.env.HYPERBROWSER_API_KEY
-  }`
-  );
+  const browser = await chromium.connectOverCDP(session.wsEndpoint);
 
   // Create a new page
   const defaultContext = browser.contexts()[

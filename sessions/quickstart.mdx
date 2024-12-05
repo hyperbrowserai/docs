@@ -85,7 +85,7 @@ const client = new Hyperbrowser({
   const session = await client.createSession();
 
   const browser = await connect({
-    browserWSEndpoint: `${session.wsEndpoint}&apiKey=${process.env.HYPERBROWSER_API_KEY}`,
+    browserWSEndpoint: session.wsEndpoint,
     defaultViewport: null,
   });
 
