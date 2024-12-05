@@ -43,6 +43,8 @@ Creates a new browser session with optional configuration.
 **Parameters:**
 
 - `CreateSessionParams`:
+  - `useStealth?: boolean` - Use stealth mode.
+  - `useProxy?: boolean` - Use proxy.
   - `proxyServer?: string` - Proxy server URL to route the session through.
   - `proxyServerUsername?: string` - Username for proxy server authentication.
   - `proxyServerPassword?: string` - Password for proxy server authentication.
@@ -63,10 +65,12 @@ Creates a new browser session with optional configuration.
     - `Platform.EDGE`
   - `locales?: ISO639_1[]` - Preferred locales (languages) for the session. Use ISO 639-1 codes.
   - `screen?: ScreenConfig` - Screen configuration for the session.
-    - `maxWidth: number` - Maximum screen width.
-    - `maxHeight: number` - Maximum screen height.
-    - `minWidth: number` - Minimum screen width.
-    - `minHeight: number` - Minimum screen height.
+    - `width: number` - Screen width.
+    - `height: number` - Screen height.
+  - `solveCaptchas?: boolean` - Solve captchas.
+  - `adblock?: boolean` - Block ads.
+  - `trackers?: boolean` - Block trackers.
+  - `annoyances?: boolean` - Block annoyances.
 
 **Response:**
 `SessionDetail`
@@ -157,6 +161,59 @@ const response = await client.stopSession(
 console.log(`Session stopped: ${response.success}`);
 ```
 
+# Start Scrape Job
+
+Starts a scrape job for a given URL.
+
+**Method:**
+`client.startScrapeJob(params: StartScrapeJobParams): Promise<StartScrapeJobResponse>`
+
+**Endpoint:**
+`POST /api/scrape`
+
+**Parameters:**
+
+- `StartScrapeJobParams`:
+  - `url: string` - URL to scrape
+
+**Response:**
+`StartScrapeJobResponse`
+
+**Example:**
+
+```typescript
+const response = await client.startScrapeJob({
+  url: "https://example.com",
+});
+console.log(response.jobId);
+```
+
+# Get Scrape Job
+
+Retrieves details of a specific scrape job.
+
+**Method:**
+`client.getScrapeJob(id: string): Promise<ScrapeJobResponse>`
+
+**Endpoint:**
+`GET /api/scrape/{id}`
+
+**Parameters:**
+
+- `id: string` - Scrape job ID
+
+**Response:**
+`ScrapeJobResponse`
+
+**Example:**
+
+```typescript
+const response = await client.getScrapeJob(
+  "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"
+);
+console.log(response.status);
+```
+
 # Types
 
 ## Basic Response
@@ -214,6 +271,8 @@ interface SessionListResponse {
 
 ```typescript
 interface CreateSessionParams {
+  useStealth?: boolean;
+  useProxy?: boolean;
   proxyServer?: string;
   proxyServerPassword?: string;
   proxyServerUsername?: string;
@@ -223,6 +282,10 @@ interface CreateSessionParams {
   platform?: Platform[];
   locales?: ISO639_1[];
   screen?: ScreenConfig;
+  solveCaptchas?: boolean;
+  adblock?: boolean;
+  trackers?: boolean;
+  annoyances?: boolean;
 }
 ```
 
@@ -236,6 +299,57 @@ interface ScreenConfig {
   minHeight: number;
 }
 ```
+
+## StartScrapeJobParams
+
+```typescript
+interface StartScrapeJobParams {
+  url: string;
+}
+```
+
+## StartScrapeJobResponse
+
+```typescript
+interface StartScrapeJobResponse {
+  jobId: string;
+}
+```
+
+## ScrapeJobMetadata
+
+```typescript
+interface ScrapeJobMetadata {
+  title: string;
+  description: string;
+  robots: string;
+  ogTitle: string;
+  ogDescription: string;
+  ogUrl: string;
+  ogImage: string;
+  ogLocaleAlternate: string[];
+  ogSiteName: string;
+  sourceURL: string;
+}
+```
+
+## ScrapeJobData
+
+````typescript
+interface ScrapeJobData {
+  metadata: ScrapeJobMetadata;
+  markdown: string;
+}
+
+## ScrapeJobResponse
+
+```typescript
+interface ScrapeJobResponse {
+  status: ScrapeJobStatus;
+  data?: ScrapeJobData;
+  error?: string;
+}
+````
 
 ## SessionStatus
 
@@ -265,4 +379,10 @@ type Platform = "chrome" | "firefox" | "safari" | "edge";
 
 ```typescript
 type ISO639_1 = "en" | "es" | "fr" | // ...other language codes
+```
+
+## ScrapeJobStatus
+
+```typescript
+type ScrapeJobStatus = "pending" | "running" | "completed" | "failed";
 ```

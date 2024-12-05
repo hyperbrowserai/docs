@@ -62,7 +62,8 @@
       "group": "Guides",
       "pages": [
         "guides/connect-with-puppeteer",
-        "guides/connect-with-playwright"
+        "guides/connect-with-playwright",
+        "guides/scrape-site"
       ]
     },
     {

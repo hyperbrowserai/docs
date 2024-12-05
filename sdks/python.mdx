@@ -41,6 +41,8 @@ Creates a new browser session.
 **Parameters:**
 
 - `CreateSessionParams`:
+  - `use_stealth?: bool` - Use stealth mode.
+  - `use_proxy?: bool` - Use proxy.
   - `proxy_server?: string` - Proxy server URL to route the session through.
   - `proxy_server_username?: string` - Username for proxy server authentication.
   - `proxy_server_password?: string` - Password for proxy server authentication.
@@ -61,10 +63,12 @@ Creates a new browser session.
     - `Platform.EDGE`
   - `locales?: ISO639_1[]` - Preferred locales (languages) for the session. Use ISO 639-1 codes.
   - `screen?: ScreenConfig` - Screen configuration for the session.
-    - `max_width: number` - Maximum screen width.
-    - `max_height: number` - Maximum screen height.
-    - `min_width: number` - Minimum screen width.
-    - `min_height: number` - Minimum screen height.
+    - `width: number` - Screen width.
+    - `height: number` - Screen height.
+  - `solve_captchas: bool` - Solve captchas.
+  - `adblock: bool` - Block ads.
+  - `trackers: bool` - Block trackers.
+  - `annoyances: bool` - Block annoyances.
 
 **Response:**
 `SessionDetail`
@@ -153,6 +157,55 @@ success = client.stop_session('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e')
 print(f"Session stopped: {success}")
 ```
 
+# Start Scrape Job
+
+Starts a scrape job for a given URL.
+
+**Method:**
+`client.start_scrape_job(params: StartScrapeJobParams): StartScrapeJobResponse`
+
+**Endpoint:**
+`POST /api/scrape`
+
+**Parameters:**
+
+- `StartScrapeJobParams`:
+  - `url: str` - URL to scrape
+
+**Response:**
+`StartScrapeJobResponse`
+
+**Example:**
+
+```python
+response = client.start_scrape_job(url="https://example.com")
+print(response.job_id)
+```
+
+# Get Scrape Job
+
+Retrieves details of a specific scrape job.
+
+**Method:**
+`client.get_scrape_job(id: str): ScrapeJobResponse`
+
+**Endpoint:**
+`GET /api/scrape/{id}`
+
+**Parameters:**
+
+- `id: str` - Scrape job ID
+
+**Response:**
+`ScrapeJobResponse`
+
+**Example:**
+
+```python
+response = client.get_scrape_job('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e')
+print(response.status)
+```
+
 # Types
 
 ## BasicResponse
@@ -213,6 +266,8 @@ class SessionListResponse(BaseModel):
 
 ```python
 class CreateSessionParams(BaseModel):
+    use_stealth: bool = False
+    use_proxy: bool = False
     proxy_server: Optional[str] = None
     proxy_server_password: Optional[str] = None
     proxy_server_username: Optional[str] = None
@@ -222,16 +277,65 @@ class CreateSessionParams(BaseModel):
     platform: Optional[List[Platform]] = None
     locales: List[ISO639_1] = ["en"]
     screen: Optional[ScreenConfig] = None
+    solve_captchas: bool = False
+    adblock: bool = False
+    trackers: bool = False
+    annoyances: bool = False
 ```
 
 ## ScreenConfig
 
 ```python
 class ScreenConfig(BaseModel):
-    max_width: int = 1280
-    max_height: int = 720
-    min_width: int = 800
-    min_height: int = 480
+    width: int = 1280
+    height: int = 720
+```
+
+## StartScrapeJobParams
+
+```python
+class StartScrapeJobParams(BaseModel):
+    url: str
+```
+
+## StartScrapeJobResponse
+
+```python
+class StartScrapeJobResponse(BaseModel):
+    job_id: str
+```
+
+## ScrapeJobMetadata
+
+```python
+class ScrapeJobMetadata(BaseModel):
+    title: str
+    description: str
+    robots: str
+    og_title: str
+    og_description: str
+    og_url: str
+    og_image: str
+    og_locale_alternate: list[str]
+    og_site_name: str
+    source_url: str
+```
+
+## ScrapeJobData
+
+```python
+class ScrapeJobData(BaseModel):
+    metadata: ScrapeJobMetadata
+    markdown: str
+```
+
+## ScrapeJobResponse
+
+```python
+class ScrapeJobResponse(BaseModel):
+    status: ScrapeJobStatus
+    error: Optional[str] = None
+    data: Optional[ScrapeJobData] = None
 ```
 
 ## SessionStatus
@@ -262,6 +366,12 @@ Platform = Literal["chrome", "firefox", "safari", "edge"]
 
 ```python
 ISO639_1 = Literal["en", "es", "fr", ...other language codes]
+```
+
+## ScrapeJobStatus
+
+```python
+ScrapeJobStatus = Literal["pending", "running", "completed", "failed"]
 ```
 
 # Client Initialization

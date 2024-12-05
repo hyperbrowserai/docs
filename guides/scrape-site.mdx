@@ -1,0 +1,57 @@
+---
+title: Scrape a website
+description: Scrape a website with Hyperbrowser
+icon: "markdown"
+---
+
+This guide will walk you through using Hyperbrowser's scraping API to extract data from websites in markdown format.
+This can be useful for extracting data for LLM applications.
+
+## Overview
+
+Hyperbrowser provides a simple API endpoint for scraping websites. The scraping process happens in two steps:
+
+1. Submit a URL to start a scrape job
+2. Poll the job status to get the results
+
+## Starting a Scrape Job
+
+To start scraping a website, make a POST request to the `/api/scrape` endpoint with the target URL:
+
+```bash
+curl -X POST "https://app.hyperbrowser.ai/api/scrape" \
+  -H "x-api-key: $HYPERBROWSER_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com"}'
+```
+
+Replace `$HYPERBROWSER_API_KEY` with your actual API key.
+
+## Polling the Job Status
+
+After starting a scrape job, you can poll the job status by making a GET request to the `/api/scrape/{jobId}` endpoint. Replace `{jobId}` with the ID of the job you started.
+
+```bash
+curl -X GET "https://app.hyperbrowser.ai/api/scrape/{jobId}" \
+  -H "x-api-key: $HYPERBROWSER_API_KEY"
+```
+
+Replace `$HYPERBROWSER_API_KEY` with your actual API key.
+
+## Example
+
+```typescript
+import Hyperbrowser from "hyperbrowser";
+
+const client = new Hyperbrowser({
+  apiKey: process.env.HYPERBROWSER_API_KEY,
+});
+
+(async () => {
+  const job = await client.startScrapeJob({ url: "https://example.com" });
+  console.log(job);
+
+  const job = await client.getScrapeJob(job.jobId);
+  console.log(job);
+})();
+```
