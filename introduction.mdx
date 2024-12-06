@@ -41,7 +41,7 @@ const session = await client.createSession();
 
 // Use the session to automate browser actions
 const browser = await connect({
-  browserWSEndpoint: `${session.wsEndpoint}&apiKey=${process.env.HYPERBROWSER_API_KEY}`,
+  browserWSEndpoint: session.wsEndpoint,
   defaultViewport: null,
 });
 
