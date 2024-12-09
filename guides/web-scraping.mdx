@@ -1,0 +1,134 @@
+---
+title: Web Scraping
+description: Web scraping with Hyperbrowser
+icon: "markdown"
+---
+
+Web scraping is the process of extracting data from websites. Hyperbrowser provides a simple API endpoint for scraping or crawling websites. The scraping process happens in two steps:
+
+1. Submit a URL to start a scrape job
+2. Poll the job status to get the results
+
+## When to Use What
+
+- **Use the Scrape Endpoint for**:
+
+  - Quick extraction of data from a single URL.
+  - Testing and prototyping your data extraction logic.
+  - Gleaning metadata from a handful of pages.
+
+- **Use the Crawl Endpoint for**:
+  - Larger-scale data gathering from multiple pages.
+  - Automating site-wide audits, content indexing, or SEO analysis.
+  - Building datasets by crawling entire sections of a website.
+
+## How to Use the Endpoints
+
+Hyperbrowser provides SDKs in node and python so you can easily get started in minutes. Let's setup the Node.js SDK in our project.
+
+<Note>
+  If you haven't already, you can sign up for a free account at
+  [app.hyperbrowser.ai](https://app.hyperbrowser.ai) and get your API key.
+</Note>
+
+**1. Install the SDK**
+
+```bash
+npm install @hyperbrowser/sdk
+```
+
+or
+
+```bash
+yarn add @hyperbrowser/sdk
+```
+
+**2. Starting a Scrape Job**
+
+```typescript
+// Initialize the client
+const client = new HyperbrowserClient({ apiKey: "YOUR_API_KEY" });
+
+// Start a scrape job for a single page
+const scrapeResponse = await client.startScrapeJob({
+  url: "https://example.com",
+  // useProxy: true, // uncomment to use a proxy, only available for paid plans
+  // solveCaptchas: true, // uncomment to solve captchas, only available for paid plans
+});
+console.log("Scrape Job Started:", scrapeResponse.jobId);
+
+// Poll for the scrape job result
+let scrapeJobResult;
+while (true) {
+  scrapeJobResult = await client.getScrapeJob(scrapeResponse.jobId);
+
+  if (scrapeJobResult.status === "completed") {
+    break;
+  } else if (scrapeJobResult.error) {
+    console.error("Scrape Job Error:", scrapeJobResult.error);
+    break;
+  } else {
+    // Job still in progress, wait 5 seconds before checking again
+    console.log("Scrape still in progress. Checking again in 5 seconds...");
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
+}
+
+console.log("Scrape Metadata:", scrapeJobResult.data.metadata);
+console.log("Page Content (Markdown):", scrapeJobResult.data.markdown);
+```
+
+**3. Starting a Crawl Job**
+
+```typescript
+// Start a crawl job with parameters
+const crawlParams: StartCrawlJobParams = {
+  url: "https://example.com",
+  maxPages: 10,
+  followLinks: true,
+  excludePatterns: [".*login.*"], // Exclude pages with 'login' in the URL
+  includePatterns: ["https://example.com/blog.*"], // Only include blog pages
+  // useProxy: true, // uncomment to use a proxy, only available for paid plans
+  // solveCaptchas: true, // uncomment to solve captchas, only available for paid plans
+};
+
+const crawlResponse = await client.startCrawlJob(crawlParams);
+console.log("Crawl Job Started:", crawlResponse.jobId);
+
+// Retrieve results page by page
+let pageIndex = 1;
+while (true) {
+  const crawlJobResult = await client.getCrawlJob(crawlResponse.jobId, {
+    page: pageIndex,
+    // batchSize: 5, default is 5
+  });
+
+  if (crawlJobResult.status === "completed" && crawlJobResult.data) {
+    // Process each batch of crawled pages
+    console.log(`Crawled Page Batch #${pageIndex}`, crawlJobResult.data);
+
+    if (pageIndex >= crawlJobResult.totalPageBatches) {
+      // No more pages
+      break;
+    }
+    pageIndex++;
+  } else if (crawlJobResult.error) {
+    console.error("Crawl Job Error:", crawlJobResult.error);
+    break;
+  } else {
+    // If not complete yet, you might wait or check back later
+    console.log("Crawl still in progress. Checking again in a moment...");
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
+}
+```
+
+### Error Handling and Status Checks
+
+Both the scrape and crawl endpoints are asynchronous. Jobs may take time to complete, depending on network conditions, the size of the site, and other factors. Because of this, it’s crucial to:
+
+- **Check the Status**: Always check the `status` field before assuming the job is done.
+- **Handle Errors Gracefully**: If `error` is present, log it or take necessary corrective actions.
+- **Retry Strategies**: Use a polling mechanism or use webhook callbacks (if available) to know when your jobs have finished without constantly pinging the service.
+
+You can find the full documentation for all of our endpoints in our [api reference](/api-reference).

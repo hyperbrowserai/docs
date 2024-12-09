@@ -474,6 +474,14 @@
                   "url": {
                     "type": "string",
                     "minLength": 1
+                  },
+                  "useProxy": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "solveCaptchas": {
+                    "type": "boolean",
+                    "default": false
                   }
                 }
               }
@@ -566,6 +574,235 @@
           },
           "404": {
             "description": "Job not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/crawl": {
+      "post": {
+        "summary": "Start a crawl job",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "maxPages": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "followLinks": {
+                    "type": "boolean"
+                  },
+                  "excludePatterns": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "includePatterns": {
+                    "type": "array", 
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "useProxy": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "solveCaptchas": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Crawl job started successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["jobId"],
+                  "properties": {
+                    "jobId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/crawl/{id}": {
+      "get": {
+        "summary": "Get crawl job status and results",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "batchSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Crawl job details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": ["pending", "running", "completed", "failed"]
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string"
+                          },
+                          "metadata": {
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "robots": {
+                                "type": "string"
+                              },
+                              "ogTitle": {
+                                "type": "string"
+                              },
+                              "ogDescription": {
+                                "type": "string"
+                              },
+                              "ogUrl": {
+                                "type": "string"
+                              },
+                              "ogImage": {
+                                "type": "string"
+                              },
+                              "ogLocaleAlternate": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "ogSiteName": {
+                                "type": "string"
+                              },
+                              "sourceURL": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "markdown": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "totalCrawledPages": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "totalPageBatches": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "currentPageBatch": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "batchSize": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Crawl job not found",
             "content": {
               "application/json": {
                 "schema": {

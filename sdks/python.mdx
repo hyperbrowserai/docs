@@ -171,6 +171,8 @@ Starts a scrape job for a given URL.
 
 - `StartScrapeJobParams`:
   - `url: str` - URL to scrape
+  - `use_proxy: bool` - Use proxy
+  - `solve_captchas: bool` - Solve captchas
 
 **Response:**
 `StartScrapeJobResponse`
@@ -203,6 +205,61 @@ Retrieves details of a specific scrape job.
 
 ```python
 response = client.get_scrape_job('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e')
+print(response.status)
+```
+
+# Start Crawl Job
+
+Starts a crawl job for a given URL.
+
+**Method:**
+`client.start_crawl_job(params: StartCrawlJobParams): StartCrawlJobResponse`
+
+**Endpoint:**
+`POST /api/crawl`
+
+**Parameters:**
+
+- `StartCrawlJobParams`:
+  - `url: str` - URL to crawl
+  - `max_pages: int` - Maximum number of pages to crawl
+  - `follow_links: bool` - Follow links
+  - `exclude_patterns: List[str]` - Patterns to exclude from the crawl
+  - `include_patterns: List[str]` - Patterns to include in the crawl
+  - `use_proxy: bool` - Use proxy
+  - `solve_captchas: bool` - Solve captchas
+
+**Response:**
+`StartCrawlJobResponse`
+
+**Example:**
+
+```python
+response = client.start_crawl_job(url="https://example.com")
+print(response.job_id)
+```
+
+# Get Crawl Job
+
+Retrieves details of a specific crawl job.
+
+**Method:**
+`client.get_crawl_job(id: str): CrawlJobResponse`
+
+**Endpoint:**
+`GET /api/crawl/{id}`
+
+**Parameters:**
+
+- `id: str` - Crawl job ID
+
+**Response:**
+`CrawlJobResponse`
+
+**Example:**
+
+```python
+response = client.get_crawl_job('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e')
 print(response.status)
 ```
 
@@ -296,6 +353,8 @@ class ScreenConfig(BaseModel):
 ```python
 class StartScrapeJobParams(BaseModel):
     url: str
+    use_proxy: bool = False
+    solve_captchas: bool = False
 ```
 
 ## StartScrapeJobResponse
@@ -338,6 +397,73 @@ class ScrapeJobResponse(BaseModel):
     data: Optional[ScrapeJobData] = None
 ```
 
+## StartCrawlJobParams
+
+```python
+class StartCrawlJobParams(BaseModel):
+    url: str
+    max_pages: int
+    follow_links: bool = True
+    exclude_patterns: List[str] = []
+    include_patterns: List[str] = []
+    use_proxy: bool = False
+    solve_captchas: bool = False
+```
+
+## StartCrawlJobResponse
+
+```python
+class StartCrawlJobResponse(BaseModel):
+    job_id: str
+```
+
+## CrawledPageMetadata
+
+```python
+class CrawledPageMetadata(BaseModel):
+    title: str
+    description: str
+    robots: str
+    og_title: str
+    og_description: str
+    og_url: str
+    og_image: str
+    og_locale_alternate: List[str]
+    og_site_name: str
+    source_url: str
+```
+
+## CrawledPage
+
+```python
+class CrawledPage(BaseModel):
+    metadata: CrawledPageMetadata
+    markdown: str
+    url: str
+```
+
+## GetCrawlJobParams
+
+```python
+class GetCrawlJobParams(BaseModel):
+    page: Optional[int] = None
+    batch_size: Optional[int] = 10
+```
+
+## CrawlJobResponse
+
+```python
+class CrawlJobResponse(BaseModel):
+    status: CrawlJobStatus
+    batch_size: Optional[int] = Field(
+        default=10, ge=1, le=50, serialization_alias="batchSize"
+    )
+    total_crawled_pages: int
+    total_page_batches: int
+    current_page_batch: int
+    batch_size: int
+```
+
 ## SessionStatus
 
 ```python
@@ -372,6 +498,12 @@ ISO639_1 = Literal["en", "es", "fr", ...other language codes]
 
 ```python
 ScrapeJobStatus = Literal["pending", "running", "completed", "failed"]
+```
+
+## CrawlJobStatus
+
+```python
+CrawlJobStatus = Literal["pending", "running", "completed", "failed"]
 ```
 
 # Client Initialization

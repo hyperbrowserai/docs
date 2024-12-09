@@ -175,6 +175,8 @@ Starts a scrape job for a given URL.
 
 - `StartScrapeJobParams`:
   - `url: string` - URL to scrape
+  - `useProxy?: boolean` - Use proxy
+  - `solveCaptchas?: boolean` - Solve captchas
 
 **Response:**
 `StartScrapeJobResponse`
@@ -209,6 +211,65 @@ Retrieves details of a specific scrape job.
 
 ```typescript
 const response = await client.getScrapeJob(
+  "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"
+);
+console.log(response.status);
+```
+
+# Start Crawl Job
+
+Starts a crawl job for a given URL.
+
+**Method:**
+`client.startCrawlJob(params: StartCrawlJobParams): Promise<StartCrawlJobResponse>`
+
+**Endpoint:**
+`POST /api/crawl`
+
+**Parameters:**
+
+- `StartCrawlJobParams`:
+  - `url: string` - URL to crawl
+  - `maxPages?: number` - Maximum number of pages to crawl
+  - `followLinks?: boolean` - Follow links
+  - `excludePatterns?: string[]` - Exclude patterns
+  - `includePatterns?: string[]` - Include patterns
+  - `useProxy?: boolean` - Use proxy
+  - `solveCaptchas?: boolean` - Solve captchas
+
+**Response:**
+`StartCrawlJobResponse`
+
+**Example:**
+
+```typescript
+const response = await client.startCrawlJob({
+  url: "https://example.com",
+});
+console.log(response.jobId);
+```
+
+# Get Crawl Job
+
+Retrieves details of a specific crawl job.
+
+**Method:**
+`client.getCrawlJob(id: string): Promise<CrawlJobResponse>`
+
+**Endpoint:**
+`GET /api/crawl/{id}`
+
+**Parameters:**
+
+- `id: string` - Crawl job ID
+
+**Response:**
+`CrawlJobResponse`
+
+**Example:**
+
+```typescript
+const response = await client.getCrawlJob(
   "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"
 );
 console.log(response.status);
@@ -351,6 +412,69 @@ interface ScrapeJobResponse {
 }
 ````
 
+## StartCrawlJobParams
+
+```typescript
+interface StartCrawlJobParams {
+  url: string;
+  maxPages?: number;
+  followLinks?: boolean;
+  excludePatterns?: string[];
+  includePatterns?: string[];
+  useProxy?: boolean;
+  solveCaptchas?: boolean;
+}
+```
+
+## StartCrawlJobResponse
+
+```typescript
+interface StartCrawlJobResponse {
+  jobId: string;
+}
+```
+
+## CrawledPageMetadata
+
+```typescript
+interface CrawledPageMetadata {
+  title: string;
+  description: string;
+  robots: string;
+  ogTitle: string;
+  ogDescription: string;
+  ogUrl: string;
+  ogImage: string;
+  ogLocaleAlternate: string[];
+  ogSiteName: string;
+  sourceURL: string;
+}
+```
+
+## CrawledPage
+
+```typescript
+interface CrawledPage {
+  url: string;
+  metadata: CrawledPageMetadata;
+  markdown: string;
+}
+```
+
+## CrawlJobResponse
+
+```typescript
+interface CrawlJobResponse {
+  status: CrawlJobStatus;
+  data?: CrawledPage[];
+  error?: string;
+  totalCrawledPages: number;
+  totalPageBatches: number;
+  currentPageBatch: number;
+  batchSize: number;
+}
+```
+
 ## SessionStatus
 
 ```typescript
@@ -385,4 +509,10 @@ type ISO639_1 = "en" | "es" | "fr" | // ...other language codes
 
 ```typescript
 type ScrapeJobStatus = "pending" | "running" | "completed" | "failed";
+```
+
+## CrawlJobStatus
+
+```typescript
+type CrawlJobStatus = "pending" | "running" | "completed" | "failed";
 ```
