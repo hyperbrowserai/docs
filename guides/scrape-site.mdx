@@ -48,10 +48,23 @@ const client = new Hyperbrowser({
 });
 
 (async () => {
-  const job = await client.startScrapeJob({ url: "https://example.com" });
-  console.log(job);
+  const startJob = await client.startScrapeJob({ url: "https://example.com" });
+  console.log(startJob);
 
-  const job = await client.getScrapeJob(job.jobId);
-  console.log(job);
+  let completed = false;
+  while (!completed) {
+    const job = await client.getScrapeJob(startJob.jobId);
+
+    if (job.status === "completed") {
+      completed = true;
+      console.log("Scrape job completed: ", job);
+    } else if (job.status === "failed") {
+      console.error("Scrape job failed: ", job.error);
+      completed = true;
+    } else {
+      console.log("Scrape job is still running: ", job.status);
+      await sleep(5_000);
+    }
+  }
 })();
 ```
